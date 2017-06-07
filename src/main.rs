@@ -53,7 +53,7 @@ fn main() {
 }
 
 
-pub fn fetch_choices(pool: &mut Pool, query: Arc<String>) -> BoxFuture<Vec<(String, String)>> {
+fn fetch_choices(pool: &mut Pool, query: Arc<String>) -> BoxFuture<Vec<(String, String)>> {
     let pool = pool.clone();
 
     let future = pool.get_conn()
