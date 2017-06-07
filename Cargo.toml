@@ -3,6 +3,9 @@ authors = ["Justin Charette <charetjc@gmail.com>"]
 name = "bug-test-01"
 version = "0.1.0"
 
+[profile.release]
+debug = true
+
 [dependencies]
 env_logger = "0.4.3"
 error-chain = "0.10.0"
