@@ -7,20 +7,19 @@ extern crate log;
 extern crate mysql_async;
 extern crate tokio_core;
 
-mod database;
-mod error;
+use futures::{future, Future};
 
-use database::*;
-use error::*;
-
-use futures::Future;
-
+use mysql_async as mysql;
 use mysql_async::{OptsBuilder, Pool};
+use mysql_async::prelude::*;
 
 use std::env;
 use std::sync::Arc;
 
 use tokio_core::reactor::Core;
+
+
+type BoxFuture<T> = Box<Future<Item = T, Error = Error>>;
 
 
 fn main() {
@@ -51,4 +50,29 @@ fn main() {
         .expect("error resolving future");
 
     debug!("done");
+}
+
+
+pub fn fetch_choices(pool: &mut Pool, query: Arc<String>) -> BoxFuture<Vec<(String, String)>> {
+    let pool = pool.clone();
+
+    let future = pool.get_conn()
+        .and_then(move |conn| conn.query(query.as_ref()))
+        .and_then(|result| {
+                      result.map(|row| {
+                let (id, text): (String, Option<String>) = mysql::from_row(row);
+                (id, text.unwrap_or("".to_owned()))
+            })
+                  })
+        .and_then(|(rows, _conn)| future::ok(rows))
+        .map_err(Error::from);
+
+    Box::new(future)
+}
+
+
+error_chain!{
+    foreign_links {
+        Mysql(::mysql_async::errors::Error);
+    }
 }
