@@ -47,7 +47,7 @@ time, barring any external factors (hardware failures, unreliable network, etc).
 
     ```sh
     export DSN="mysql://testbot:testbot@host:port/fake_data"
-    RUST_LOG=bug_test_01=debug,mysql_async=debug cargo run --bin bug-test-01
+    RUST_LOG=bug_test_01=debug,mysql_async=debug cargo run --release --bin bug-test-01
     ```
 
 5.  Observe that the programs fails with an error similar to:
@@ -68,9 +68,9 @@ time, barring any external factors (hardware failures, unreliable network, etc).
 
 ## How I know this isn't a network/database server issue.
 
-On the very same machine I run `cargo run --bin bug-test-01`, I fired up
-[Wireshark][wireshark] and captured the network packets to and
-from the database server on port 3306.
+On the very same machine I run `cargo run --release --bin bug-test-01`, I fired
+up [Wireshark][wireshark] and captured the network packets to and from the
+database server on port 3306.
 
 [wireshark]: https://www.wireshark.org/
 
