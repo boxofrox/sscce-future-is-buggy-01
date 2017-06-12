@@ -32,13 +32,7 @@ fn main() {
 
     let fetch_results = pool.get_conn()
         .and_then(|conn| conn.query("SELECT sku, description FROM products"))
-        .and_then(|result| result.drop_result())
-        .then(|result| {
-                  if let Err(err) = result {
-                      error!("{}", err);
-                  }
-                  Ok(()) as Result<()>
-              });
+        .and_then(|result| result.drop_result());
 
     core.run(fetch_results)
         .chain_err(|| "error resolving future")
