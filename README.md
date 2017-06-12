@@ -5,7 +5,10 @@ debugging purposes from a much larger project.
 
 This program runs a simple database `SELECT` query intended to pull a large
 quantity of results (100k+).  This issue I see is that the program will
-randomly fail with a `Packet out of order` error.
+randomly fail with a `PacketOutOfOrder` error.
+
+This error only occurs on the release target.  The debug target ran 355
+consecutive times with zero errors.
 
 
 # Expected Behavior
