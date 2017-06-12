@@ -14,12 +14,8 @@ use mysql_async::{OptsBuilder, Pool};
 use mysql_async::prelude::*;
 
 use std::env;
-use std::sync::Arc;
 
 use tokio_core::reactor::Core;
-
-
-type BoxFuture<T> = Box<Future<Item = T, Error = Error>>;
 
 
 fn main() {
@@ -33,11 +29,18 @@ fn main() {
     let opts = OptsBuilder::from_opts(&db_url);
 
     let mut core = Core::new().unwrap();
-    let mut pool = Pool::new(opts, &core.handle());
+    let pool = Pool::new(opts, &core.handle());
 
-    let query = Arc::new("SELECT sku, description FROM products".to_owned());
-
-    let future = fetch_choices(&mut pool, query)
+    let fetch_results = pool.get_conn()
+        .and_then(|conn| conn.query("SELECT sku, description FROM products"))
+        .and_then(|result| {
+            result.map(|row| {
+                let (id, text): (String, Option<String>) = mysql::from_row(row);
+                (id, text.unwrap_or("".to_owned()))
+            })
+        })
+        .and_then(|(rows, _conn)| future::ok(rows))
+        .map_err(Error::from)
         .then(|result| {
                   if let Err(err) = result {
                       error!("{}", err);
@@ -45,29 +48,11 @@ fn main() {
                   Ok(()) as Result<()>
               });
 
-    core.run(future)
+    core.run(fetch_results)
         .chain_err(|| "error resolving future")
         .expect("error resolving future");
 
     debug!("done");
-}
-
-
-fn fetch_choices(pool: &mut Pool, query: Arc<String>) -> BoxFuture<Vec<(String, String)>> {
-    let pool = pool.clone();
-
-    let future = pool.get_conn()
-        .and_then(move |conn| conn.query(query.as_ref()))
-        .and_then(|result| {
-                      result.map(|row| {
-                let (id, text): (String, Option<String>) = mysql::from_row(row);
-                (id, text.unwrap_or("".to_owned()))
-            })
-                  })
-        .and_then(|(rows, _conn)| future::ok(rows))
-        .map_err(Error::from);
-
-    Box::new(future)
 }
 
 
