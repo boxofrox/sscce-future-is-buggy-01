@@ -62,6 +62,25 @@ time, barring any external factors (hardware failures, unreliable network, etc).
     statements, or only remove `mysql_async=debug` from that log list.
 
 
+# System Info
+
+```
+$ rustc --version --verbose
+rustc 1.19.0-nightly (f062832b2 2017-06-07)
+binary: rustc
+commit-hash: f062832b208e94f2f0f26ed7fb5c48c172069fbe
+commit-date: 2017-06-07
+host: x86_64-unknown-linux-gnu
+release: 1.19.0-nightly
+LLVM version: 4.0
+```
+
+```
+$ uname -a
+Linux 4.10.11-1-ARCH #1 SMP PREEMPT Tue Apr 18 08:39:42 CEST 2017 x86_64 GNU/Linux
+```
+
+
 # Things I've Tried or...
 
 ## How I know this isn't a network/database server issue.
