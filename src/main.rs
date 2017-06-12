@@ -7,9 +7,8 @@ extern crate log;
 extern crate mysql_async;
 extern crate tokio_core;
 
-use futures::{future, Future};
+use futures::Future;
 
-use mysql_async as mysql;
 use mysql_async::{OptsBuilder, Pool};
 use mysql_async::prelude::*;
 
@@ -33,14 +32,7 @@ fn main() {
 
     let fetch_results = pool.get_conn()
         .and_then(|conn| conn.query("SELECT sku, description FROM products"))
-        .and_then(|result| {
-            result.map(|row| {
-                let (id, text): (String, Option<String>) = mysql::from_row(row);
-                (id, text.unwrap_or("".to_owned()))
-            })
-        })
-        .and_then(|(rows, _conn)| future::ok(rows))
-        .map_err(Error::from)
+        .and_then(|result| result.drop_result())
         .then(|result| {
                   if let Err(err) = result {
                       error!("{}", err);
