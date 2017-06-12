@@ -1,5 +1,3 @@
-#[macro_use]
-extern crate error_chain;
 extern crate env_logger;
 extern crate futures;
 #[macro_use]
@@ -18,9 +16,7 @@ use tokio_core::reactor::Core;
 
 
 fn main() {
-    env_logger::init()
-        .chain_err(|| "cannot initialize logger")
-        .unwrap();
+    env_logger::init().expect("cannot initialize logger");
 
     debug!("running");
 
@@ -35,15 +31,7 @@ fn main() {
         .and_then(|result| result.drop_result());
 
     core.run(fetch_results)
-        .chain_err(|| "error resolving future")
         .expect("error resolving future");
 
     debug!("done");
-}
-
-
-error_chain!{
-    foreign_links {
-        Mysql(::mysql_async::errors::Error);
-    }
 }

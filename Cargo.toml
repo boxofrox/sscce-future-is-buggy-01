@@ -8,7 +8,6 @@ debug = true
 
 [dependencies]
 env_logger = "0.4.3"
-error-chain = "0.10.0"
 futures = "0.1.14"
 log = "0.3.8"
 mysql_async = "0.9.3"
