@@ -52,11 +52,9 @@ time, barring any external factors (hardware failures, unreliable network, etc).
 
 5.  Observe that the programs fails with an error similar to:
 
-        DEBUG:mysql_async::proto: Last seq id 211
-        DEBUG:mysql_async::proto: Last seq id 48
-        ERROR:bug_test_01::database: runner: unable to fetch choices: Packet out of order
-        ERROR:bug_test_01: oneshot canceled
-        DEBUG:bug_test_01: done
+        DEBUG:bug_test_01: running
+        thread 'main' panicked at 'error resolving future: Error(PacketOutOfOrder, State { next_error: None, backtrace: None })', /checkout/src/libcore/result.rs:860
+        note: Run with `RUST_BACKTRACE=1` for a backtrace.
 
     If you do not see this error, rerun the binary until you do.  Like I said,
     the error occurs randomly.  To improve your chances of the error occurring,
